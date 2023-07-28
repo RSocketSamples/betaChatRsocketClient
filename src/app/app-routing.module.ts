@@ -1,7 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-const routes: Routes = [];
+const routes: Routes = [
+  {
+    path: '',
+    loadChildren: () => import('./ui/chat/chat.module').then(m => m.ChatModule)
+  }
+];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
