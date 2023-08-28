@@ -3,8 +3,8 @@ import { CommonModule } from '@angular/common';
 import { ChatComponent } from './components/chat/chat.component';
 import { ChatRoutingModule } from './chat-routing.module';
 import { UserComponent } from './components/user/user.component';
-import { MatGridListModule } from '@angular/material/grid-list';
 import { HomeComponent } from './pages/home/home.component';
+import { MatIconModule } from '@angular/material/icon';
 
 @NgModule({
   declarations: [
@@ -15,7 +15,7 @@ import { HomeComponent } from './pages/home/home.component';
   imports: [
     CommonModule,
     ChatRoutingModule,
-    MatGridListModule,
-  ]
+    MatIconModule,
+  ],
 })
 export class ChatModule { }

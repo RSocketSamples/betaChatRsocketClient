@@ -1,13 +1,44 @@
-<div class="container">
-  <div class="row">
-    <div class="header col-12" style="background-color: blue;">
-        <p>header</p>
+<div class="row">
+  <div class="header col-12">
+    <div class="status-circle" [ngClass]="{'online': isOnline, 'offline': !isOnline}">
+      <div class="inner-circle"></div>
     </div>
-    <div class="body col-12" style="background-color: green;">
-        <p>body</p>
-    </div>
-    <div class="footer col-12" style="background-color: red;">
-        <p>footer</p>
+    <div class="title-chat">{{chatTitle}}</div>
+  </div>
+  <div class="body col-12">
+    <ng-container *ngFor="let message of messages">
+      <div class="message-sended" *ngIf="message.user.id == senderUser.id">
+        <img class="profile-image-sended" src="{{ message.user.profileImage }}" alt="Imagen de Perfil">
+        <div class="message-container">
+          <div class="sender-info">
+            <span class="sender-name">{{ message.user.name }}</span>
+          </div>
+          <div class="message-sended-content">
+            <p class="text">{{ message.content }}</p>
+            <span class="message-time">{{ message.createdAt }}</span>
+          </div>
+        </div>
+      </div>
+      <div class="message" *ngIf="message.user.id == receiverUser.id">
+        <img class="profile-image" [src]="message.user.profileImage" alt="Imagen de Perfil">
+        <div class="message-container">
+          <div class="receiver-info">
+            <span class="sender-name">{{ message.user.name }}</span>
+          </div>
+          <div class="message-content">
+            <p class="text">{{ message.content }}</p>
+            <span class="message-time">{{ message.createdAt }}</span>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+  <div class="footer col-12">
+    <div class="message-input">
+      <input class="input-message" placeholder="Escribe un mensaje...">
+      <button class="btn btn-primary">
+        <mat-icon fontIcon="send"></mat-icon>
+      </button>
     </div>
   </div>
 </div>
