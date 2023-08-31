@@ -35,9 +35,9 @@
   </div>
   <div class="footer col-12">
     <div class="message-input">
-      <input class="input-message" placeholder="Escribe un mensaje...">
+      <input type="text" class="input-message"  [(ngModel)]="messageContent"  name="dato" placeholder="Escribe un mensaje...">
       <button class="btn btn-primary">
-        <mat-icon fontIcon="send"></mat-icon>
+        <mat-icon fontIcon="send" (click)="sendMessage()"></mat-icon>
       </button>
     </div>
   </div>

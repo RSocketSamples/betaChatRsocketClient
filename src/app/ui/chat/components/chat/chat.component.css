@@ -4,6 +4,7 @@
 
 .body {
     height: 88vh;
+    overflow: auto;
     display: flex;
     align-items: flex-start;
     flex-direction: column;

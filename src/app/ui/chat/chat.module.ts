@@ -5,6 +5,8 @@ import { ChatRoutingModule } from './chat-routing.module';
 import { UserComponent } from './components/user/user.component';
 import { HomeComponent } from './pages/home/home.component';
 import { MatIconModule } from '@angular/material/icon';
+import { FormsModule } from '@angular/forms';
+
 
 @NgModule({
   declarations: [
@@ -16,6 +18,7 @@ import { MatIconModule } from '@angular/material/icon';
     CommonModule,
     ChatRoutingModule,
     MatIconModule,
+    FormsModule,
   ],
 })
 export class ChatModule { }
