@@ -1,3 +1,6 @@
 <div class="container" *ngFor="let user of users">
-    <p>user works! bienvenido {{user.name}}</p>
+  <div class="user-info">
+    <img class="profile-image" src="{{ user.profileImage }}" alt="Imagen de Perfil">
+    <b><p>{{user.nickname}}</p></b>
+  </div>
 </div>

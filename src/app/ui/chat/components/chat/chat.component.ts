@@ -36,12 +36,14 @@ export class ChatComponent implements OnInit {
   senderUser: IUser = {
     id: 1,
     name: 'Jhoan Gonzalez',
+    nickname: "jhoan.gonzalez",
     profileImage: 'assets/perfil-sender.jpg',
   }
 
   receiverUser: IUser = {
     id: 2,
     name: 'Brayan Herrera',
+    nickname: "brayan.herrera",
     profileImage: 'assets/perfil-image.jpg',
   }
 
