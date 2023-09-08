@@ -1,6 +1,42 @@
+.row {
+  margin: 0 auto;
+  overflow: auto;
+  align-items: stretch;
+  height: 80vh;
+}
+
+.row::-webkit-scrollbar {
+  -webkit-appearance: none;
+}
+
+.row::-webkit-scrollbar:vertical {
+  width: 1px;
+}
+
+.row::-webkit-scrollbar-button:increment,.row::-webkit-scrollbar-button {
+  display: none;
+} 
+
+.row::-webkit-scrollbar-thumb {
+  background-color: #79797900;
+  border-radius: 20px;
+  border: 2px solid #f1f2f3;
+}
+
+.row::-webkit-scrollbar-track {
+  border-radius: 10px;  
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+  padding-left: 30px;
+}
+
 .container {
-  margin-left: 20%;
-  margin-top: 10%;
+  margin-top: 20px;
+  margin-bottom: 20px;
 }
 
 .profile-image {
@@ -14,4 +50,15 @@
 .user-info{
   display: flex;
   align-items: self-end;
+}
+
+.logo {
+  display: flex;
+  justify-content: center;
+  height: 20vh;
+}
+
+p {
+  font-family: 'Poppins-Bold', sans-serif;
+  font-size: 15px;
 }

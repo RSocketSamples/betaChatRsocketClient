@@ -1,0 +1,76 @@
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-image: url('src/assets/wallpaper.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+  }
+  
+  .login-box {
+    width: 600px;
+    height: 450px;
+    padding: 20px;
+    background-color: #1D1D1B;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  h2 {
+    margin-bottom: 20px;
+    color: #FFFFFF;
+  }
+  
+  .form-group {
+    margin-bottom: 35px;
+    text-align: left;
+  }
+
+  label {
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+    color: #FFFFFF;
+  }
+  
+  .form-control {
+    width: 100%;
+    padding: 8px;
+    border: none;
+    border-bottom: 2px solid #6429CD;
+    border-radius: 3px;
+    background-color: #1D1D1B;
+    color: white;
+  }
+  
+  .btn-primary {
+    background-color: #6429CD;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    padding: 10px 20px;
+    cursor: pointer;
+  }
+  
+  .btn-primary:hover {
+    background-color: #330072;
+  }
+  
+  .register {
+    margin-top: 10px;
+    color: #6429CD;
+    font-size: 15px;
+    text-decoration: underline;
+  }
+
+  .profileImageDiv {
+    padding: 30px;
+    border-color: #6429CD;
+    border-style: dashed;
+    margin-bottom: 40px;
+  }

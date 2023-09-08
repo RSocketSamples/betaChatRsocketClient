@@ -6,13 +6,14 @@ import { UserComponent } from './components/user/user.component';
 import { HomeComponent } from './pages/home/home.component';
 import { MatIconModule } from '@angular/material/icon';
 import { FormsModule } from '@angular/forms';
-
+import { LoginComponent } from './pages/login/login.component';
 
 @NgModule({
   declarations: [
     ChatComponent,
     UserComponent,
     HomeComponent,
+    LoginComponent,
   ],
   imports: [
     CommonModule,

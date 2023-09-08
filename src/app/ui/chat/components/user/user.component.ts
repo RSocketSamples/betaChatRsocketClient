@@ -9,14 +9,12 @@ import { IUser } from '../../interfaces/user.interface';
 export class UserComponent {
   users: IUser[] = [
     {
-      id: 1,
-      name: "Brayan Herrera",
+      id: "1",
       nickname: "brayan.herrera",
       profileImage: "assets/perfil-image.jpg"
     },
     {
-      id: 2,
-      name: "Jhoan Gonzales",
+      id: "2",
       nickname: "jhoan.gonzalez",
       profileImage: "assets/perfil-sender.jpg"
     },

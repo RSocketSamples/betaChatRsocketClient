@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { IMessageSend, IMessageReceived } from '../../interfaces/message.interface';
 import { IUser } from '../../interfaces/user.interface';
-import { IdentitySerializer, JsonSerializer, RSocketClient } from 'rsocket-core';
-import RSocketWebSocketClient from 'rsocket-websocket-client';
-import { Subject } from 'rxjs';
+import { Subscription  } from 'rxjs';
+import { ChatService } from '../../shared/chat.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-chat',
@@ -11,133 +11,36 @@ import { Subject } from 'rxjs';
   styleUrls: ['./chat.component.css']
 })
 export class ChatComponent implements OnInit {
-  clientRsocket = new RSocketClient({
-    serializers: {
-      data: JsonSerializer,
-      metadata: IdentitySerializer,
-    },
-    setup: {
-      keepAlive: 60000,
-      lifetime: 180000,
-      dataMimeType: 'application/json',
-      metadataMimeType: 'message/x.rsocket.routing.v0',
-    },
-    transport: new RSocketWebSocketClient({ url: 'ws://localhost:1409' }),
-  });
-
   connection!: any;
-  sub = new Subject();
-  isOnline: boolean = false;
+  messageSubscription!: Subscription;
+  isOnline: string = 'warn';
   chatTitle: string = 'Chapter Integración';
   messageContent: string = '';
-
   message = '';
-
-  senderUser: IUser = {
-    id: 1,
-    name: 'Jhoan Gonzalez',
-    nickname: "jhoan.gonzalez",
-    profileImage: 'assets/perfil-sender.jpg',
+  
+  myUser: IUser = {
+    id: localStorage.getItem("userId"),
+    nickname: localStorage.getItem("userNickname"),
+    profileImage: localStorage.getItem("userProfileImage"),
   }
+  
+  messages: IMessageReceived[] = [];
 
-  receiverUser: IUser = {
-    id: 2,
-    name: 'Brayan Herrera',
-    nickname: "brayan.herrera",
-    profileImage: 'assets/perfil-image.jpg',
-  }
-
-  messages: IMessageReceived[] = [
-    {
-      id: 1,
-      content: 'Hola, ¿Cómo estás?',
-      user: this.senderUser,
-      createdAt: '10:00 AM'
-    },
-    {
-      id: 2,
-      content: 'Hola Jhoan, muy bien y tú?',
-      user: this.receiverUser,
-      createdAt: '10:05 AM'
-    },
-    {
-      id: 3,
-      content: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Autem veritatis mollitia, saepe enim quo, adipisci libero molestiae unde nostrum voluptas quas quidem facilis repellendus laborum iure! Rem id autem reiciendis?',
-      user: this.receiverUser,
-      createdAt: '10:07 AM'
-    },
-    {
-      id: 4,
-      content: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Autem veritatis mollitia, saepe enim quo, adipisci libero molestiae unde nostrum voluptas quas quidem facilis repellendus laborum iure! Rem id autem reiciendis?',
-      user: this.senderUser,
-      createdAt: '10:10 AM'
-    },
-    {
-      id: 5,
-      content: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Autem veritatis mollitia, saepe enim quo, adipisci libero molestiae unde nostrum voluptas quas quidem facilis repellendus laborum iure! Rem id autem reiciendis?',
-      user: this.receiverUser,
-      createdAt: '10:07 AM'
-    },
-    {
-      id: 6,
-      content: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Autem veritatis mollitia, saepe enim quo, adipisci libero molestiae unde nostrum voluptas quas quidem facilis repellendus laborum iure! Rem id autem reiciendis?',
-      user: this.senderUser,
-      createdAt: '10:10 AM'
-    },
-    {
-      id: 7,
-      content: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Autem veritatis mollitia, saepe enim quo, adipisci libero molestiae unde nostrum voluptas quas quidem facilis repellendus laborum iure! Rem id autem reiciendis?',
-      user: this.senderUser,
-      createdAt: '10:10 AM'
-    },
-    {
-      id: 8,
-      content: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Autem veritatis mollitia, saepe enim quo, adipisci libero molestiae unde nostrum voluptas quas quidem facilis repellendus laborum iure! Rem id autem reiciendis?',
-      user: this.receiverUser,
-      createdAt: '10:07 AM'
-    },
-    {
-      id: 9,
-      content: 'Lorem ipsum dolor, sit amet consectetur adipisicing elit. Autem veritatis mollitia, saepe enim quo, adipisci libero molestiae unde nostrum voluptas quas quidem facilis repellendus laborum iure! Rem id autem reiciendis?',
-      user: this.senderUser,
-      createdAt: '10:10 AM'
-    },
-  ];
+  constructor(private chatService: ChatService,
+    private router: Router) { }
 
   ngOnInit(): void {
     this.connectRsocketServer();
   }
 
-  async connectRsocketServer() { 
-    this.connection = await this.clientRsocket.connect()
+  async connectRsocketServer() {
+    const clientRsocket = await this.chatService.rsocketServer();
+    clientRsocket.connect()
     .subscribe({
       onComplete: (socket) => {
-          this.isOnline = true;
-
-          socket.requestStream({
-            metadata: String.fromCharCode('list.messages'.length)+ 'list.messages'
-          }).subscribe({
-              onComplete: () => console.log('complete'),
-              onError: error => {
-                console.log("Connection has been closed due to:: " + error);
-              },
-              onNext: payload => {
-                console.log(payload);
-                // this.addMessage(payload.data);
-              },
-              onSubscribe: subscription => {
-                subscription.request(1000000);
-              },
-          });
-
-          this.sub.subscribe({
-            next: (data) => {
-              socket.fireAndForget({
-                data: data,
-                metadata: String.fromCharCode('create.message'.length) + 'create.message',
-              });
-            }
-          });
+          this.connection = socket;
+          this.isOnline = 'primary';
+          this.setupMessageStream();
       },
       onError: error => {
         console.log("Connection has been refused due to:: " + error);
@@ -145,13 +48,56 @@ export class ChatComponent implements OnInit {
     });
   }
 
+  private setupMessageStream() {
+    this.messages = [];
+    this.messageSubscription = this.connection.requestStream({
+      metadata: String.fromCharCode('list.messages'.length)+ 'list.messages'
+    }).subscribe({
+        onComplete: () => console.log('complete'),
+        onError: (error: string) => {
+          console.log("Connection has been closed due to:: " + error);
+        },
+        onNext: (payload: { data: IMessageReceived; }) => {  
+          this.addMessage(payload.data);
+        },
+        onSubscribe: (subscription: { request: (arg0: number) => void; }) => {
+          subscription.request(1000000);
+        },
+    });
+  }
+
   async sendMessage() {
-    let message: IMessageSend = {
-      body: this.messageContent,
-      sender: 'jhoan.gonzalez'
-    };
-    console.log("sending message:" + this.messageContent);
-    this.sub.next(message);
-    this.message = '';
+    if (this.messageContent.trim() !== '') {
+      let message: IMessageSend = {
+        body: this.messageContent,
+        sender: this.myUser.nickname
+      };
+
+      console.log("sending message:" + this.messageContent);
+      await this.createMessage(message);
+      this.messageContent = '';
+    } else {
+      console.log('Campo de entrada vacío, el mensaje no se enviará.');
+    }
+  }
+
+  async createMessage(data: IMessageSend) {    
+    await this.connection.fireAndForget({
+      data: data,
+      metadata: String.fromCharCode('create.message'.length) + 'create.message',
+    });
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    await this.setupMessageStream();
+  }
+
+  addMessage(newMessage: IMessageReceived) {
+    this.messages = [...this.messages, newMessage];
+  }
+
+  logout() {
+    localStorage.removeItem("userId");
+    localStorage.removeItem("userNickname");
+    localStorage.removeItem("userProfileImage");
+    this.router.navigate(['']);
   }
 }

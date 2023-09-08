@@ -1,0 +1,22 @@
+<div class="login-container">
+    <div class="login-box">
+      <h2  *ngIf="showRegister == false">Login</h2>
+      <h2  *ngIf="showRegister == true">Registrar Usuario</h2>
+      <form>
+        <div class="form-group">
+          <label for="username">Usuario</label>
+          <input type="text" id="username" class="form-control" [(ngModel)]="username" [ngModelOptions]="{standalone: true}" placeholder="Nombre de usuario" required>
+        </div>
+        <div class="profileImageDiv" *ngIf="showRegister == true">
+            <label for="image">Selecciona una imagen:</label>
+            <input type="file" id="image" (change)="onFileSelected($event)" accept="image/*">
+        </div>
+        <button *ngIf="showRegister == false" type="submit" class="btn btn-primary" (click)="loginUser()">Iniciar sesión</button>
+        <button *ngIf="showRegister == true" type="submit" class="btn btn-primary">Registrarse</button>
+        </form>
+        <div class="register">
+            <p *ngIf="showRegister == false" (click)="displayRegister()">Registrarse</p>
+            <p *ngIf="showRegister == true" (click)="closeRegister()">Iniciar Sesión</p>
+        </div>
+    </div>
+</div>
