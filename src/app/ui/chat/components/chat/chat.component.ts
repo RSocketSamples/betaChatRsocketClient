@@ -17,6 +17,7 @@ export class ChatComponent implements OnInit {
   chatTitle: string = 'Chapter Integración';
   messageContent: string = '';
   message = '';
+  lastMessageTime: string = '';
   
   myUser: IUser = {
     id: localStorage.getItem("userId"),
@@ -82,7 +83,7 @@ export class ChatComponent implements OnInit {
   }
 
   async createMessage(data: IMessageSend) {    
-    await this.connection.fireAndForget({
+    await this.connection.requestResponse({
       data: data,
       metadata: String.fromCharCode('create.message'.length) + 'create.message',
     });
@@ -92,6 +93,7 @@ export class ChatComponent implements OnInit {
 
   addMessage(newMessage: IMessageReceived) {
     this.messages = [...this.messages, newMessage];
+    this.lastMessageTime = newMessage.createdAt;
   }
 
   logout() {
