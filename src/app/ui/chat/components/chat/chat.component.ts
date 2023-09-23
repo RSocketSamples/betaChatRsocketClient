@@ -1,9 +1,8 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, Renderer2 } from '@angular/core';
 import { IMessageSend, IMessageReceived } from '../../interfaces/message.interface';
 import { IUser } from '../../interfaces/user.interface';
-import { Subscription  } from 'rxjs';
-import { ChatService } from '../../shared/chat.service';
 import { Router } from '@angular/router';
+import { MessageService } from '../../shared/message.service';
 
 @Component({
   selector: 'app-chat',
@@ -12,11 +11,9 @@ import { Router } from '@angular/router';
 })
 export class ChatComponent implements OnInit {
   connection!: any;
-  messageSubscription!: Subscription;
   isOnline: string = 'warn';
   chatTitle: string = 'Chapter Integración';
   messageContent: string = '';
-  message = '';
   
   myUser: IUser = {
     id: localStorage.getItem("userId"),
@@ -26,43 +23,21 @@ export class ChatComponent implements OnInit {
   
   messages: IMessageReceived[] = [];
 
-  constructor(private chatService: ChatService,
-    private router: Router) { }
+  constructor(private messageService: MessageService,
+    private el: ElementRef, 
+    private renderer: Renderer2,
+    private router: Router) {}
 
   ngOnInit(): void {
-    this.connectRsocketServer();
-  }
-
-  async connectRsocketServer() {
-    const clientRsocket = await this.chatService.rsocketServer();
-    clientRsocket.connect()
-    .subscribe({
-      onComplete: (socket) => {
-          this.connection = socket;
-          this.isOnline = 'primary';
-          this.setupMessageStream();
-      },
-      onError: error => {
-        console.log("Connection has been refused due to:: " + error);
-      },
+    this.messageService.connectRsocketServer().finally(() => {
+        this.isOnline = 'primary';
     });
-  }
-
-  private setupMessageStream() {
+  
     this.messages = [];
-    this.messageSubscription = this.connection.requestStream({
-      metadata: String.fromCharCode('list.messages'.length)+ 'list.messages'
-    }).subscribe({
-        onComplete: () => console.log('complete'),
-        onError: (error: string) => {
-          console.log("Connection has been closed due to:: " + error);
-        },
-        onNext: (payload: { data: IMessageReceived; }) => {  
-          this.addMessage(payload.data);
-        },
-        onSubscribe: (subscription: { request: (arg0: number) => void; }) => {
-          subscription.request(1000000);
-        },
+
+    this.messageService.getMessageStream().subscribe((message: IMessageReceived[]) => {
+        console.log('Nuevo mensaje en tiempo real:', message);
+        this.messages.push(...message);
     });
   }
 
@@ -74,24 +49,34 @@ export class ChatComponent implements OnInit {
       };
 
       console.log("sending message:" + this.messageContent);
-      await this.createMessage(message);
+
+      await this.messageService.createMessage(message);
+      await new Promise((resolve) => setTimeout(resolve, 100));
+
+      this.messages = [];
+      await this.messageService.setupMessageStream().subscribe();
+
       this.messageContent = '';
     } else {
       console.log('Campo de entrada vacío, el mensaje no se enviará.');
     }
   }
 
-  async createMessage(data: IMessageSend) {    
-    await this.connection.fireAndForget({
-      data: data,
-      metadata: String.fromCharCode('create.message'.length) + 'create.message',
-    });
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    await this.setupMessageStream();
+  async onScroll(event: Event) {
+    const container = this.el.nativeElement.querySelector('.body');
+
+    if (this.isScrolledToBottom(container)) {
+      this.messages = [];
+      await this.messageService.setupMessageStream().subscribe();
+    }
   }
 
-  addMessage(newMessage: IMessageReceived) {
-    this.messages = [...this.messages, newMessage];
+  isScrolledToBottom(element: HTMLElement): boolean {
+    if (element.scrollTop == 0 || element.scrollTop == 1) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   logout() {

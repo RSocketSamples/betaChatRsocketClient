@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { ChatService } from '../../shared/chat.service';
 import { IUser } from '../../interfaces/user.interface';
 import { Router } from '@angular/router';
+import { IAvatar, avatars } from '../../interfaces/avatars';
 
 @Component({
   selector: 'app-login',
@@ -10,14 +11,18 @@ import { Router } from '@angular/router';
 })
 export class LoginComponent {
   showRegister: boolean = false;
+  userCreated: boolean = false;
   connection!: any;
   username: string = '';
-  userNickname: string = '';
   userRegister!: IUser;
-  userProfileImage: File | null = null;
+  imagePath: string | null = null;
+  avatars: IAvatar[] = [];
 
   constructor(private chatService: ChatService,
-    private router: Router) { }
+    private router: Router,
+    ) {
+      this.avatars = avatars;
+    }
 
   ngOnInit(): void {
     this.connectRsocketServer();
@@ -50,25 +55,37 @@ export class LoginComponent {
         localStorage.setItem("userNickname", payload.data.nickname);
         localStorage.setItem("userProfileImage", payload.data.profileImage);
         this.router.navigate(['home']);
-    },
+      },
     });
   }
 
-  onFileSelected(event: any): void {
-    console.log(event);
-    
-    const file = event.target.files[0];
-    if (file) {
-      // Puedes generar una URL para la imagen seleccionada (nota que esto no sube la imagen al servidor)
-      this.userRegister.profileImage = URL.createObjectURL(file);
-    }
+  selectAvatar(avatarPath: string) {
+    this.imagePath = avatarPath;
   }
 
-  onSubmit(): void {
-    // Aquí puedes implementar el código para guardar la imagen en la carpeta "assets"
-    // y guardar la ruta en la variable "profileImage"
-    // Esto generalmente requeriría una lógica de servidor para manejar la carga y almacenamiento de imágenes.
-    console.log('Ruta de la imagen:', this.userRegister.profileImage);
+  async registerUser() {
+    this.userRegister = {
+      nickname: this.username,
+      profileImage: this.imagePath
+    };
+
+    if (this.userRegister.nickname != '' && this.userRegister.profileImage != '') {
+      await this.connection.requestResponse({
+        data: this.userRegister,
+        metadata: String.fromCharCode('create.user'.length) + 'create.user',
+        }).subscribe({
+          onComplete: (payload: any) => {  
+            console.log(payload);
+            this.userCreated = true;
+            setTimeout(() => {
+              this.userCreated = false;
+              this.showRegister = false;
+            }, 2000); 
+        },
+      });
+    } else {
+      console.log('Campo de entrada vacío, el usuario no se creará.');
+    }
   }
 
   displayRegister() {

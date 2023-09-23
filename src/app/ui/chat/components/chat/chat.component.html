@@ -8,7 +8,7 @@
       <a (click)="logout()"><mat-icon>input</mat-icon></a>
     </div>
   </div>
-  <div class="body col-12">
+  <div class="body col-12" (scroll)="onScroll($event)">
     <ng-container *ngFor="let message of messages">
       <div class="message-sended" *ngIf="message.sender.id == myUser.id">
         <img class="profile-image-sended" src="{{ message.sender.profileImage }}" alt="Imagen de Perfil">

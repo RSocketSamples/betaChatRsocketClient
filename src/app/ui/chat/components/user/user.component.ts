@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { IUser } from '../../interfaces/user.interface';
+import { UserService } from '../../shared/user.service';
 
 @Component({
   selector: 'app-user',
@@ -7,16 +8,15 @@ import { IUser } from '../../interfaces/user.interface';
   styleUrls: ['./user.component.css']
 })
 export class UserComponent {
-  users: IUser[] = [
-    {
-      id: "1",
-      nickname: "brayan.herrera",
-      profileImage: "assets/perfil-image.jpg"
-    },
-    {
-      id: "2",
-      nickname: "jhoan.gonzalez",
-      profileImage: "assets/perfil-sender.jpg"
-    },
-  ];
+  users: IUser[] = [];
+
+  constructor(private userService: UserService,
+    ) { }
+
+  ngOnInit(): void {
+    // Suscribirse a la secuencia de mensajes en tiempo real
+    this.userService.getUserStream().subscribe((user) => {
+      this.users.push(user);
+    });
+  }
 }
