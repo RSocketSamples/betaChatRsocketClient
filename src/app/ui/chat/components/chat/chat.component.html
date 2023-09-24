@@ -9,7 +9,7 @@
     </div>
   </div>
   <div class="body col-12">
-    <ng-container *ngFor="let message of messages">
+    <ng-container *ngFor="let message of messages.reverse()">
       <div class="message-sended" *ngIf="message.sender.id == myUser.id">
         <img class="profile-image-sended" src="{{ message.sender.profileImage }}" alt="Imagen de Perfil">
         <div class="message-container">
@@ -38,7 +38,7 @@
   </div>
   <div class="footer col-12">
     <div class="message-input">
-      <input type="text" class="input-message" [(ngModel)]="messageContent" name="dato" 
+      <input type="text" class="input-message" [(ngModel)]="messageContent" name="dato"
       placeholder="Escribe un mensaje..." (keyup.enter)="sendMessage()">
       <button class="btn btn-primary">
         <mat-icon fontIcon="send" (click)="sendMessage()"></mat-icon>
