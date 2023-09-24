@@ -7,10 +7,10 @@
     background-size: cover;
     background-repeat: no-repeat;
   }
-  
+
   .login-box {
     width: 600px;
-    height: 450px;
+    height: 580px;
     padding: 20px;
     background-color: #1D1D1B;
     border-radius: 5px;
@@ -20,12 +20,12 @@
     flex-direction: column;
     justify-content: center;
   }
-  
+
   h2 {
     margin-bottom: 20px;
     color: #FFFFFF;
   }
-  
+
   .form-group {
     margin-bottom: 35px;
     text-align: left;
@@ -37,7 +37,7 @@
     margin-bottom: 5px;
     color: #FFFFFF;
   }
-  
+
   .form-control {
     width: 100%;
     padding: 8px;
@@ -47,7 +47,7 @@
     background-color: #1D1D1B;
     color: white;
   }
-  
+
   .btn-primary {
     background-color: #6429CD;
     color: white;
@@ -56,11 +56,11 @@
     padding: 10px 20px;
     cursor: pointer;
   }
-  
+
   .btn-primary:hover {
     background-color: #330072;
   }
-  
+
   .register {
     margin-top: 10px;
     color: #6429CD;
@@ -73,4 +73,30 @@
     border-color: #6429CD;
     border-style: dashed;
     margin-bottom: 40px;
+  }
+
+
+  /* Estilos personalizados */
+  .avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid #6429CD;
+    margin: 10px;
+    object-fit: cover; /* Ajusta la imagen al círculo */
+  }
+
+  .avatar-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .avatar-row {
+    margin-top: 20px;
+  }
+
+  .avatar-selected {
+    border-color: aliceblue;
   }
