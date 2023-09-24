@@ -1,10 +1,10 @@
 import { IUser } from "./user.interface";
 
 export interface IMessageReceived {
-    id: string;
+    id?: string;
     body: string;
     sender: IUser;
-    createdAt: string;
+    createdAt?: string;
 }
 
 export interface IMessageSend {
