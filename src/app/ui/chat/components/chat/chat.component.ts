@@ -16,16 +16,17 @@ export class ChatComponent implements OnInit {
   isOnline: string = 'warn';
   chatTitle: string = 'Chapter Integración';
   messageContent: string = '';
-  message = '';
-  lastMessageTime: string = '';
-  
+
   myUser: IUser = {
     id: localStorage.getItem("userId"),
     nickname: localStorage.getItem("userNickname"),
     profileImage: localStorage.getItem("userProfileImage"),
   }
-  
+
   messages: IMessageReceived[] = [];
+
+  received_messages = new Map();
+
 
   constructor(private chatService: ChatService,
     private router: Router) { }
@@ -34,14 +35,22 @@ export class ChatComponent implements OnInit {
     this.connectRsocketServer();
   }
 
+
   async connectRsocketServer() {
+
+      function sleep(ms: number | undefined) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
     const clientRsocket = await this.chatService.rsocketServer();
     clientRsocket.connect()
     .subscribe({
-      onComplete: (socket) => {
+      onComplete: async (socket) => {
           this.connection = socket;
           this.isOnline = 'primary';
-          this.setupMessageStream();
+          while (true) {
+            this.setupMessageStream();
+            await sleep(500);
+          }
       },
       onError: error => {
         console.log("Connection has been refused due to:: " + error);
@@ -50,19 +59,25 @@ export class ChatComponent implements OnInit {
   }
 
   private setupMessageStream() {
-    this.messages = [];
+
+    // this.messages = [];
+
     this.messageSubscription = this.connection.requestStream({
       metadata: String.fromCharCode('list.messages'.length)+ 'list.messages'
     }).subscribe({
-        onComplete: () => console.log('complete'),
-        onError: (error: string) => {
-          console.log("Connection has been closed due to:: " + error);
-        },
-        onNext: (payload: { data: IMessageReceived; }) => {  
+      onComplete: () => console.log('complete'),
+      onError: (error: string) => {
+        console.log("Connection has been closed due to:: " + error);
+      },
+      onNext: (payload: { data: IMessageReceived; }) => {
+
+        if (!this.received_messages.has(payload.data.id)) {
           this.addMessage(payload.data);
+        }
+
         },
         onSubscribe: (subscription: { request: (arg0: number) => void; }) => {
-          subscription.request(1000000);
+          subscription.request(1);
         },
     });
   }
@@ -82,7 +97,7 @@ export class ChatComponent implements OnInit {
     }
   }
 
-  async createMessage(data: IMessageSend) {    
+  async createMessage(data: IMessageSend) {
     await this.connection.requestResponse({
       data: data,
       metadata: String.fromCharCode('create.message'.length) + 'create.message',
@@ -93,7 +108,7 @@ export class ChatComponent implements OnInit {
 
   addMessage(newMessage: IMessageReceived) {
     this.messages = [...this.messages, newMessage];
-    this.lastMessageTime = newMessage.createdAt;
+    this.received_messages.set(newMessage.id, newMessage);
   }
 
   logout() {
