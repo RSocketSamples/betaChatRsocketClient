@@ -74,7 +74,7 @@ export class ChatComponent implements OnInit {
 
         },
         onSubscribe: async (subscription: { request: (arg0: number) => void; }) => {
-          subscription.request(1);
+          subscription.request(1000);
         },
     });
   }
