@@ -62,7 +62,6 @@ export class ChatComponent implements OnInit {
     this.messageSubscription = this.connection.requestStream({
       metadata: String.fromCharCode('list.messages'.length)+ 'list.messages'
     }).subscribe({
-      onComplete: () => console.log('complete'),
       onError: (error: string) => {
         console.log("Connection has been closed due to:: " + error);
       },

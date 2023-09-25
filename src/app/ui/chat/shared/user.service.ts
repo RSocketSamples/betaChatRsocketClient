@@ -38,7 +38,6 @@ export class UserService {
     this.connection.requestStream({
       metadata: String.fromCharCode('list.user'.length)+ 'list.user'
     }).subscribe({
-        onComplete: () => console.log('complete'),
         onError: (error: string) => {
           console.log("Connection has been closed due to:: " + error);
         },
