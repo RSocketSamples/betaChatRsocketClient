@@ -46,7 +46,7 @@ export class ChatComponent implements OnInit {
           this.isOnline = 'primary';
           while (true) {
             this.setupMessageStream();
-            await new Promise((resolve) => setTimeout(resolve, 250));
+            await new Promise((resolve) => setTimeout(resolve, 1000));
           }
       },
       onError: error => {
@@ -56,9 +56,6 @@ export class ChatComponent implements OnInit {
   }
 
   private setupMessageStream() {
-
-    // this.messages = [];
-
     this.messageSubscription = this.connection.requestStream({
       metadata: String.fromCharCode('list.messages'.length)+ 'list.messages'
     }).subscribe({
@@ -70,7 +67,6 @@ export class ChatComponent implements OnInit {
         if (!this.received_messages.has(payload.data.id)) {
           this.addMessage(payload.data);
         }
-
         },
         onSubscribe: async (subscription: { request: (arg0: number) => void; }) => {
           subscription.request(1000);
@@ -84,8 +80,6 @@ export class ChatComponent implements OnInit {
         body: this.messageContent,
         sender: this.myUser.nickname
       };
-
-      console.log("sending message:" + this.messageContent);
       await this.createMessage(message);
       this.messageContent = '';
     } else {
@@ -98,8 +92,6 @@ export class ChatComponent implements OnInit {
       data: data,
       metadata: String.fromCharCode('create.message'.length) + 'create.message',
     });
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-    await this.setupMessageStream();
   }
 
   addMessage(newMessage: IMessageReceived) {
