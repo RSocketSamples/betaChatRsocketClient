@@ -38,9 +38,6 @@ export class ChatComponent implements OnInit {
 
   async connectRsocketServer() {
 
-      function sleep(ms: number | undefined) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
     const clientRsocket = await this.chatService.rsocketServer();
     clientRsocket.connect()
     .subscribe({
@@ -49,7 +46,7 @@ export class ChatComponent implements OnInit {
           this.isOnline = 'primary';
           while (true) {
             this.setupMessageStream();
-            await sleep(500);
+            await new Promise((resolve) => setTimeout(resolve, 250));
           }
       },
       onError: error => {
@@ -76,7 +73,7 @@ export class ChatComponent implements OnInit {
         }
 
         },
-        onSubscribe: (subscription: { request: (arg0: number) => void; }) => {
+        onSubscribe: async (subscription: { request: (arg0: number) => void; }) => {
           subscription.request(1);
         },
     });
@@ -107,7 +104,7 @@ export class ChatComponent implements OnInit {
   }
 
   addMessage(newMessage: IMessageReceived) {
-    this.messages = [...this.messages, newMessage];
+    this.messages.unshift(newMessage);
     this.received_messages.set(newMessage.id, newMessage);
   }
 
@@ -118,3 +115,4 @@ export class ChatComponent implements OnInit {
     this.router.navigate(['']);
   }
 }
+

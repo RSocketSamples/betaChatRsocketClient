@@ -18,7 +18,7 @@ export class ChatService {
         dataMimeType: 'application/json',
         metadataMimeType: 'message/x.rsocket.routing.v0',
       },
-      transport: new RSocketWebSocketClient({ url: 'ws://back:1409' }),
+      transport: new RSocketWebSocketClient({ url: 'ws://wss.notianimes.com' }),
     });
 
     return clientRsocket;

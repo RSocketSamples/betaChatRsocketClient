@@ -9,7 +9,7 @@
     </div>
   </div>
   <div class="body col-12">
-    <ng-container *ngFor="let message of messages.reverse()">
+    <ng-container *ngFor="let message of messages">
       <div class="message-sended" *ngIf="message.sender.id == myUser.id">
         <img class="profile-image-sended" src="{{ message.sender.profileImage }}" alt="Imagen de Perfil">
         <div class="message-container">
